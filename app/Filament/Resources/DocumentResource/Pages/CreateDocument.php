@@ -14,4 +14,20 @@ class CreateDocument extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+	protected function afterCreate(): void
+    {
+        // Aksi setelah membuat document, misalnya mengirim notifikasi atau log
+        $document = $this->record;
+        // Lakukan sesuatu dengan $document, misalnya mengirim email atau log aktivitas
+        $register = Register::where('kode_po', $document->kode_po)->first();
+        if ($register) {
+            $status = strtolower($register->status ?? ''); // jika null, jadi string kosong
+
+            if (in_array($status, ['', 'registered'])) {
+                $register->update([
+                    'status' => 'documented',
+                ]);
+            }
+        }
+    }
 }

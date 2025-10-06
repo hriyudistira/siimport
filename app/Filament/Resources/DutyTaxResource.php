@@ -10,6 +10,7 @@ use App\Models\Purchase;
 use App\Models\Register;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Mask;
 use Illuminate\Database\Eloquent\Model;
@@ -95,7 +96,24 @@ class DutyTaxResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('bill_date')
                     ->label('Billing Date')
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        if (!$state) {
+                            $set('payment_date', null);
+                            return;
+                        }
+
+                        $billingDate = Carbon::parse($state);
+
+                        // Otomatis set payment_date = bill_date + 1 bulan
+                        $paymentDate = $billingDate->copy()->addMonth()->day(15);
+                        $set('payment_date', $paymentDate->format('Y-m-d'));
+                    }),
+                Forms\Components\DatePicker::make('payment_date')
+                    ->label('Payment Date')
+                    ->dehydrated(true)
+                    ->readOnly(),
                 Forms\Components\fileUpload::make('doc_bill')
                     //->label('Document BPN')
 		    ->label('Document Billing')
@@ -154,21 +172,33 @@ class DutyTaxResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bm')
                     ->label('Bea Masuk')
-                    ->searchable(),
+                    ->searchable()
+					->alignment('right')
+                    ->formatStateUsing(fn($state) => $state !== null ? number_format($state, 0, ',', '.') : '-'),
                 Tables\Columns\TextColumn::make('pph')
                     ->label('PPH')
-                    ->searchable(),
+                    ->searchable()
+					->alignment('right')
+                    ->formatStateUsing(fn($state) => $state !== null ? number_format($state, 0, ',', '.') : '-'),
                 Tables\Columns\TextColumn::make('ppn')
                     ->label('PPN')
-                    ->searchable(),
+                    ->searchable()
+					->alignment('right')
+                    ->formatStateUsing(fn($state) => $state !== null ? number_format($state, 0, ',', '.') : '-'),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
-                    ->searchable(),
+                    ->searchable()
+					->alignment('right')
+                    ->formatStateUsing(fn($state) => $state !== null ? number_format($state, 0, ',', '.') : '-'),
                 Tables\Columns\TextColumn::make('no_bill')
                     ->label('No. Billing')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bill_date')
                     ->label('Billing Date')
+                    ->date()
+                    ->sortable(),
+				Tables\Columns\TextColumn::make('payment_date')
+                    ->label('Payment Date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('doc_bill')
@@ -210,7 +240,9 @@ class DutyTaxResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cocc')
                     ->label('Biaya Handling')
-                    ->searchable(),
+                    ->searchable()
+					->alignment('right')
+                    ->formatStateUsing(fn($state) => $state !== null ? number_format($state, 0, ',', '.') : '-'),
                 Tables\Columns\TextColumn::make('no_pay')
                     ->label('No. Payment')
                     ->searchable(),

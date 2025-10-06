@@ -15,4 +15,20 @@ class CreateSchedule extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+	    protected function afterCreate(): void
+    {
+        // Aksi setelah membuat jadwal, misalnya mengirim notifikasi atau log
+        $schedule = $this->record;
+        // Lakukan sesuatu dengan $schedule, misalnya mengirim email atau log aktivitas
+        $register = Register::where('kode_po', $schedule->kode_po)->first();
+        if ($register) {
+            $status = strtolower($register->status ?? ''); // jika null, jadi string kosong
+
+            if (in_array($status, ['', 'registered'])) {
+                $register->update([
+                    'status' => 'scheduled',
+                ]);
+            }
+        }
+    }
 }

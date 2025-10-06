@@ -156,6 +156,15 @@ class RegisterResource extends Resource
                         'puninar' => 'Puninar',
                     ])
                     ->default(null),
+				Forms\Components\Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'registered' => 'Registered',
+						 'scheduled' => 'Scheduled',
+                        'documented' => 'Documented',
+                        'clearanced' => 'Clearanced',
+                        'closed' => 'Closed',
+                    ]),
                 Forms\Components\FileUpload::make('doc_evidence')
                     ->label('Proforma Invoice')
                     ->disk('public')
@@ -211,6 +220,7 @@ class RegisterResource extends Resource
                     ->label('PO Number')
                     ->sortable()
                     ->searchable()
+					->color('primary')
 					 ->url(fn($record) => RegisterResource::getUrl('view', ['record' => $record])),
                 Tables\Columns\TextColumn::make('supplier')
                     ->searchable(),
@@ -257,6 +267,18 @@ class RegisterResource extends Resource
                 Tables\Columns\TextColumn::make('container')
                     ->formatStateUsing(fn($state) => strtoupper(substr($state, 4))) // tampilkan dalam huruf besar
                     ->searchable(),
+					Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->searchable()
+                    ->color(fn($state) => match (strtolower($state)) {
+                        'registered' => 'danger',
+                        'documented' => 'primary',
+                        'scheduled' => 'secondary',
+                        'clearanced' => 'info',
+                        'closed' => 'success',
+                        default => 'secondary',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -67,9 +67,8 @@ class ClearanceResource extends Resource
                     ->label('Nopen PIB')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('spb_date')
-                    ->label('SPPB Date')
-                    ->required(),
+				Forms\Components\DatePicker::make('pib_date')
+                    ->label('PIB Date'),              
                 Forms\Components\fileUpload::make('doc_spb')
                     ->label('Document SPPB')
                     ->directory('form-spb')
@@ -80,6 +79,9 @@ class ClearanceResource extends Resource
                     ->downloadable()
                     ->openable()
                     ->preserveFilenames()
+                    ->required(),
+				Forms\Components\DatePicker::make('spb_date')
+                    ->label('SPPB Date')
                     ->required(),
                 Forms\Components\TextInput::make('cek_bc')
                     ->label('No. BC1.1')

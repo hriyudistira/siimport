@@ -15,4 +15,11 @@ class CreateRegister extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+	protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['status'] = $data['status'] ?? 'registered';
+
+
+        return $data;
+    }
 }

@@ -21,4 +21,20 @@ class EditDutyTax extends EditRecord
     {
         return $this->getResource()::getUrl('index');
     }
+	 // protected function afterSave(): void
+    // {
+        // $duty = $this->record;
+
+        // $register = \App\Models\Register::where('kode_po', $duty->kode_po)->first();
+
+        // if ($register) {
+            // $status = strtolower($register->status ?? '');
+
+            // if (in_array($status, ['', 'clearanced'])) {
+                // $register->update([
+                    // 'status' => 'closed',
+                // ]);
+            // }
+        // }
+    // }
 }

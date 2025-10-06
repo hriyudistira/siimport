@@ -66,8 +66,8 @@ return $date ? \Carbon\Carbon::parse($date)->translatedFormat('d M Y') : '-';
 };
 
 // --- status & shipstatus resolved text & color ---
-$statusText = $statusLabels[$record->schedule->order_status] ?? ($record->schedule->order_status ?? '-');
-$shipStatusText = $shipstatusLabels[$record->schedule->ship_status] ?? ($record->schedule->ship_status ?? '-');
+$statusText = $statusLabels[$record->schedule?->order_status] ?? ($record->schedule?->order_status ?? '-');
+$shipStatusText = $shipstatusLabels[$record->schedule?->ship_status] ?? ($record->schedule->ship_status ?? '-');
 
 @endphp
 
